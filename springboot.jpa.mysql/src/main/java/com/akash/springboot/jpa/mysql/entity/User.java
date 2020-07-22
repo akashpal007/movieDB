@@ -20,7 +20,7 @@ import javax.persistence.Table;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;
+	private long id;
 	private String name;
 	@Column(columnDefinition = "int(12)")
 	private Integer phone;
@@ -32,7 +32,7 @@ public class User {
 	 * @param name  -String
 	 * @param phone -Integer
 	 */
-	public User(Integer id, String name, Integer phone) {
+	public User(long id, String name, Integer phone) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -49,14 +49,14 @@ public class User {
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	public long getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Integer id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

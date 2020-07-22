@@ -20,6 +20,8 @@ import com.akash.springboot.jpa.mysql.dao.MovieDao;
 import com.akash.springboot.jpa.mysql.entity.Movie;
 import com.akash.springboot.jpa.mysql.entity.ResponseMovieContainer;
 import com.akash.springboot.jpa.mysql.entity.User;
+import com.akash.springboot.jpa.mysql.exception.MovieNotFoundException;
+
 /**
  * @author Akash
  *
@@ -96,6 +98,11 @@ public class MovieController {
 
 	/* ########################----User Related Call----######################## */
 
+	/**
+	 * @param userId
+	 * @param movieName
+	 * @return List of movies searching by name
+	 */
 	@GetMapping(value = { "/user/{userId}/movie/{movieName}" })
 	public List<Movie> getUserRatedMovies(@PathVariable long userId, @PathVariable String movieName) {
 		List<Movie> movies = new ArrayList<Movie>();
@@ -104,9 +111,15 @@ public class MovieController {
 				ResponseMovieContainer.class);
 		if (resp.getResults().length != 0) {
 			movies = Arrays.asList(resp.getResults());
+			movies.forEach(movie -> {
+				Movie userMovie = movieDao.findByUser_IdAndId(userId, movie.getId());
+				if (Objects.nonNull(userMovie)) {
+					movie.setMyRating(userMovie.getMyRating());
+				}
+			});
+		} else {
+			throw new MovieNotFoundException("Movie Not Found - " + movieName);
 		}
-		// I also have to search in my db so that if any movieId present in my db which
-		// is came from 3rd party api that must be added
 		return movies;
 	}
 
@@ -117,7 +130,7 @@ public class MovieController {
 	 * @return 10 Recently rated movies list Rated by given user
 	 */
 	@PostMapping(value = { "/user/{userId}/movie" })
-	public List<Movie> saveUserRatedMovies(@PathVariable Integer userId, @RequestParam String movieId,
+	public List<Movie> saveUserRatedMovies(@PathVariable long userId, @RequestParam String movieId,
 			@RequestParam String myRating) {
 		List<Movie> movies = new ArrayList<Movie>();
 		if (Objects.nonNull(movieId) && Objects.nonNull(myRating)) {
@@ -144,7 +157,7 @@ public class MovieController {
 	 * @return Movies list Rated by given user
 	 */
 	@GetMapping(value = { "/user/{userId}/movies" })
-	public List<Movie> getUserRatedMovies(@PathVariable Integer userId) {
+	public List<Movie> getUserRatedMovies(@PathVariable long userId) {
 		List<Movie> movies = new ArrayList<Movie>();
 
 		movies = movieDao.findByUser_IdOrderByTimestampDesc(userId);
@@ -156,7 +169,7 @@ public class MovieController {
 	 * @return Top 10 Rated movies list Rated by given user
 	 */
 	@GetMapping(value = { "/user/{userId}/movies/TopRated" })
-	public List<Movie> getUserTopRatedMovies(@PathVariable Integer userId) {
+	public List<Movie> getUserTopRatedMovies(@PathVariable long userId) {
 		List<Movie> movies = new ArrayList<Movie>();
 
 		Pageable pageable = PageRequest.of(0, 10);
@@ -169,7 +182,7 @@ public class MovieController {
 	 * @return 10 Recently rated movies list Rated by given user
 	 */
 	@GetMapping(value = { "/user/{userId}/movies/RecentRated" })
-	public List<Movie> getUserRecentRatedMovies(@PathVariable Integer userId) {
+	public List<Movie> getUserRecentRatedMovies(@PathVariable long userId) {
 		List<Movie> movies = new ArrayList<Movie>();
 
 		Pageable pageable = PageRequest.of(0, 10);
