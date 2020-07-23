@@ -1,62 +1,47 @@
-/**
- * 
- */
 package com.akash.springboot.jpa.mysql.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * @author Akash
- *
- */
-
 @Entity
-@Table(name = "user")
+@Table(name = "USERS")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private long id;
+	private Integer id;
 	private String name;
-	@Column(columnDefinition = "int(12)")
-	private Integer phone;
+	private String password;
 
-	/**
-	 * Parameterized constructor
-	 * 
-	 * @param id    -Integer
-	 * @param name  -String
-	 * @param phone -Integer
-	 */
-	public User(long id, String name, Integer phone) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.phone = phone;
-	}
-
-	/**
-	 * Default constructor
-	 */
 	public User() {
 
 	}
 
 	/**
+	 * @param id
+	 * @param name
+	 * @param password
+	 */
+	public User(Integer id, String name, String password) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.password = password;
+	}
+
+	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public Integer getId() {
 		return id;
 	}
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -75,17 +60,17 @@ public class User {
 	}
 
 	/**
-	 * @return the phone
+	 * @return the password
 	 */
-	public Integer getPhone() {
-		return phone;
+	public String getPassword() {
+		return password;
 	}
 
 	/**
-	 * @param phone the phone to set
+	 * @param password the password to set
 	 */
-	public void setPhone(Integer phone) {
-		this.phone = phone;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

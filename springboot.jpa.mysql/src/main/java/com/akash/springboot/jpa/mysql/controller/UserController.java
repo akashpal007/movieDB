@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.akash.springboot.jpa.mysql.dao.UserDao;
 import com.akash.springboot.jpa.mysql.entity.User;
+
 /**
  * @author Akash
  *
@@ -30,7 +31,7 @@ public class UserController {
 	}
 
 	@GetMapping("/user/{id}")
-	public Optional<User> getUser(@PathVariable long id) {
+	public Optional<User> getUser(@PathVariable Integer id) {
 		return userDao.findById(id);
 	}
 

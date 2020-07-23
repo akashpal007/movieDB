@@ -5,7 +5,7 @@ public class ResponseMovieContainer {
 	private Integer page;
 	private Integer total_results;
 	private Integer total_pages;
-	private Movie[] results;
+	private MovieDto[] results;
 
 	public ResponseMovieContainer() {
 	}
@@ -55,14 +55,14 @@ public class ResponseMovieContainer {
 	/**
 	 * @return the results
 	 */
-	public Movie[] getResults() {
+	public MovieDto[] getResults() {
 		return results;
 	}
 
 	/**
 	 * @param results the results to set
 	 */
-	public void setResults(Movie[] results) {
+	public void setResults(MovieDto[] results) {
 		this.results = results;
 	}
 

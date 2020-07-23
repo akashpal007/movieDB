@@ -1,36 +1,30 @@
 package com.akash.springboot.jpa.mysql.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "MOVIES")
-public class Movie {
-	@Id
+public class MovieDto {
 	private Integer id;
 	private String title;
-	private Double averageRating;
-	@Lob
+	private Double vote_average;
 	private String overview;
+	private Double myRating;
 
-	public Movie() {
+	public MovieDto() {
 
 	}
 
 	/**
 	 * @param id
 	 * @param title
-	 * @param averageRating
+	 * @param vote_average
 	 * @param overview
+	 * @param myRating
 	 */
-	public Movie(Integer id, String title, Double averageRating, String overview) {
+	public MovieDto(Integer id, String title, Double vote_average, String overview, Double myRating) {
 		super();
 		this.id = id;
 		this.title = title;
-		this.averageRating = averageRating;
+		this.vote_average = vote_average;
 		this.overview = overview;
+		this.myRating = myRating;
 	}
 
 	/**
@@ -62,17 +56,17 @@ public class Movie {
 	}
 
 	/**
-	 * @return the averageRating
+	 * @return the vote_average
 	 */
-	public Double getAverageRating() {
-		return averageRating;
+	public Double getVote_average() {
+		return vote_average;
 	}
 
 	/**
-	 * @param averageRating the averageRating to set
+	 * @param vote_average the vote_average to set
 	 */
-	public void setAverageRating(Double averageRating) {
-		this.averageRating = averageRating;
+	public void setVote_average(Double vote_average) {
+		this.vote_average = vote_average;
 	}
 
 	/**
@@ -87,6 +81,20 @@ public class Movie {
 	 */
 	public void setOverview(String overview) {
 		this.overview = overview;
+	}
+
+	/**
+	 * @return the myRating
+	 */
+	public Double getMyRating() {
+		return myRating;
+	}
+
+	/**
+	 * @param myRating the myRating to set
+	 */
+	public void setMyRating(Double myRating) {
+		this.myRating = myRating;
 	}
 
 }
