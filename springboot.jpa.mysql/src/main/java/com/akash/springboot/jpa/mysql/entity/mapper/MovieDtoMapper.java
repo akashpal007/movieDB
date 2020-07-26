@@ -9,7 +9,7 @@ import com.akash.springboot.jpa.mysql.entity.Movie;
 import com.akash.springboot.jpa.mysql.entity.UserMovieRatings;
 
 public class MovieDtoMapper {
-	public MovieDto getMovieToDto(Movie movie) {
+	public MovieDto geDtoFromMovie(Movie movie) {
 		MovieDto movieDto = new MovieDto();
 		if (Objects.nonNull(movie)) {
 			movieDto.setId(movie.getId());
@@ -21,18 +21,18 @@ public class MovieDtoMapper {
 		return null;
 	}
 
-	public List<MovieDto> getMovieToDtoList(List<Movie> movies) {
+	public List<MovieDto> getDtoListFromMovieList(List<Movie> movies) {
 		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 		if (!movies.isEmpty()) {
 			for (Movie movie : movies) {
-				movieDtos.add(getMovieToDto(movie));
+				movieDtos.add(geDtoFromMovie(movie));
 			}
 			return movieDtos;
 		}
 		return null;
 	}
 
-	public Movie getDtoToMovie(MovieDto movieDto) {
+	public Movie getMovieFromDto(MovieDto movieDto) {
 		Movie movie = new Movie();
 		if (Objects.nonNull(movieDto)) {
 			movie.setId(movieDto.getId());
@@ -45,18 +45,18 @@ public class MovieDtoMapper {
 		return null;
 	}
 
-	public List<Movie> getDtoToMovieList(List<MovieDto> movieDtos) {
+	public List<Movie> getMovieListFromDtoList(List<MovieDto> movieDtos) {
 		List<Movie> movies = new ArrayList<Movie>();
 		if (!movieDtos.isEmpty()) {
 			for (MovieDto movieDto : movieDtos) {
-				movies.add(getDtoToMovie(movieDto));
+				movies.add(getMovieFromDto(movieDto));
 			}
 			return movies;
 		}
 		return null;
 	}
 
-	public MovieDto getRatingToMovieDto(UserMovieRatings userMovieRating) {
+	public MovieDto getMovieDtoFromUserMovieRating(UserMovieRatings userMovieRating) {
 		MovieDto movieDto = new MovieDto();
 		if (Objects.nonNull(userMovieRating)) {
 			movieDto.setId(userMovieRating.getMovie().getId());
@@ -69,11 +69,11 @@ public class MovieDtoMapper {
 		return null;
 	}
 
-	public List<MovieDto> getRatingListToMovieDtoList(List<UserMovieRatings> userMovieRatings) {
+	public List<MovieDto> getMovieDtoListFromUserMovieRatingList(List<UserMovieRatings> userMovieRatings) {
 		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 		if (!userMovieRatings.isEmpty()) {
 			for (UserMovieRatings userMovieRating : userMovieRatings) {
-				movieDtos.add(getRatingToMovieDto(userMovieRating));
+				movieDtos.add(getMovieDtoFromUserMovieRating(userMovieRating));
 			}
 			return movieDtos;
 		}

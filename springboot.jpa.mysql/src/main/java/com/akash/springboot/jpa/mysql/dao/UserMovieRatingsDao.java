@@ -14,4 +14,8 @@ public interface UserMovieRatingsDao extends JpaRepository<UserMovieRatings, Use
 
 	List<UserMovieRatings> findByUserIdOrderByTimestampDesc(Integer userId, Pageable pageable);
 
+	List<UserMovieRatings> findByUserId(Integer userId);
+
+	List<UserMovieRatings> findByUserIdOrderByRatingDesc(Integer userId, Pageable pageable);
+
 }

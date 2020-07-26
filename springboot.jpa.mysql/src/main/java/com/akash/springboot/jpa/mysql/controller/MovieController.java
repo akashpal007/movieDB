@@ -115,7 +115,7 @@ public class MovieController {
 	 * @return List of movies searching by name
 	 */
 	@GetMapping(value = { "/user/{userId}/movie/{movieName}" })
-	public List<MovieDto> getUserRatedMovies(@PathVariable Integer userId, @PathVariable String movieName) {
+	public List<MovieDto> getMovieSearch(@PathVariable Integer userId, @PathVariable String movieName) {
 		List<MovieDto> moviesDtos = new ArrayList<MovieDto>();
 		ResponseMovieContainer resp = restTemplate.getForObject(
 				"https://api.themoviedb.org/3/search/movie?api_key=" + apiKry + "&query=" + movieName,
@@ -157,7 +157,7 @@ public class MovieController {
 						"https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKry, MovieDto.class);
 				if (Objects.nonNull(movieDto)) {
 					User userData = new User(userId, "", "");
-					Movie movieData = movieDtoMapper.getDtoToMovie(movieDto);
+					Movie movieData = movieDtoMapper.getMovieFromDto(movieDto);
 					movieData = movieDao.save(movieData);
 					UserMovieRatings userMovieRating = new UserMovieRatings(userId, movieId, userData, movieData,
 							myRating, new Date());
@@ -171,47 +171,53 @@ public class MovieController {
 		Pageable pageable = PageRequest.of(0, 10);
 		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByTimestampDesc(userId,
 				pageable);
-		
-		movieDtos = movieDtoMapper.getRatingListToMovieDtoList(userMovieRatings);
+
+		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
 
 		return movieDtos;
 	}
 
-//	/**
-//	 * @param userId
-//	 * @return Movies list Rated by given user
-//	 */
-//	@GetMapping(value = { "/user/{userId}/movies" })
-//	public List<Movie> getUserRatedMovies(@PathVariable Integer userId) {
-//		List<Movie> movies = new ArrayList<Movie>();
-//
-//		movies = movieDao.findByUser_IdOrderByTimestampDesc(userId);
-//		return movies;
-//	}
-//
-//	/**
-//	 * @param userId
-//	 * @return Top 10 Rated movies list Rated by given user
-//	 */
-//	@GetMapping(value = { "/user/{userId}/movies/TopRated" })
-//	public List<Movie> getUserTopRatedMovies(@PathVariable Integer userId) {
-//		List<Movie> movies = new ArrayList<Movie>();
-//
-//		Pageable pageable = PageRequest.of(0, 10);
-//		movies = movieDao.findByUser_IdOrderByMyRatingDesc(userId, pageable);
-//		return movies;
-//	}
-//
-//	/**
-//	 * @param userId
-//	 * @return 10 Recently rated movies list Rated by given user
-//	 */
-//	@GetMapping(value = { "/user/{userId}/movies/RecentRated" })
-//	public List<Movie> getUserRecentRatedMovies(@PathVariable Integer userId) {
-//		List<Movie> movies = new ArrayList<Movie>();
-//
-//		Pageable pageable = PageRequest.of(0, 10);
-//		movies = movieDao.findByUser_IdOrderByTimestampDesc(userId, pageable);
-//		return movies;
-//	}
+	/**
+	 * @param userId
+	 * @return Movies list Rated by given user
+	 */
+	@GetMapping(value = { "/user/{userId}/movies" })
+	public List<MovieDto> getUserRatedMovies(@PathVariable Integer userId) {
+		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
+
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserId(userId);
+
+		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
+		return movieDtos;
+	}
+
+	/**
+	 * @param userId
+	 * @return Top 10 Rated movies list Rated by given user
+	 */
+	@GetMapping(value = { "/user/{userId}/movies/TopRated" })
+	public List<MovieDto> getUserTopRatedMovies(@PathVariable Integer userId) {
+		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
+
+		Pageable pageable = PageRequest.of(0, 10);
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByRatingDesc(userId, pageable);
+
+		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
+		return movieDtos;
+	}
+
+	/**
+	 * @param userId
+	 * @return 10 Recently rated movies list Rated by given user
+	 */
+	@GetMapping(value = { "/user/{userId}/movies/RecentRated" })
+	public List<MovieDto> getUserRecentlyRatedMovies(@PathVariable Integer userId) {
+		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
+
+		Pageable pageable = PageRequest.of(0, 10);
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByTimestampDesc(userId, pageable);
+
+		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
+		return movieDtos;
+	}
 }
