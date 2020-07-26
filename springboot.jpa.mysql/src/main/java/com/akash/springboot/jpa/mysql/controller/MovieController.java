@@ -1,5 +1,6 @@
 package com.akash.springboot.jpa.mysql.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.akash.springboot.jpa.mysql.dao.MovieDao;
+import com.akash.springboot.jpa.mysql.dao.UserDao;
 import com.akash.springboot.jpa.mysql.dao.UserMovieRatingsDao;
-import com.akash.springboot.jpa.mysql.entity.MovieDto;
-import com.akash.springboot.jpa.mysql.entity.Movie;
-import com.akash.springboot.jpa.mysql.entity.User;
-import com.akash.springboot.jpa.mysql.entity.ResponseMovieContainer;
-import com.akash.springboot.jpa.mysql.entity.UserMovieRatings;
-import com.akash.springboot.jpa.mysql.entity.mapper.MovieDtoMapper;
 import com.akash.springboot.jpa.mysql.exception.MovieNotFoundException;
+import com.akash.springboot.jpa.mysql.vo.dto.MovieDto;
+import com.akash.springboot.jpa.mysql.vo.entity.Movie;
+import com.akash.springboot.jpa.mysql.vo.entity.ResponseMovieContainer;
+import com.akash.springboot.jpa.mysql.vo.entity.User;
+import com.akash.springboot.jpa.mysql.vo.entity.UserMovieRatings;
+import com.akash.springboot.jpa.mysql.vo.mapper.MovieDtoMapper;
 
 /**
  * @author Akash
@@ -40,6 +43,9 @@ public class MovieController {
 	MovieDao movieDao;
 
 	@Autowired
+	UserDao userDao;
+
+	@Autowired
 	UserMovieRatingsDao userMovieRatingsDao;
 
 	MovieDtoMapper movieDtoMapper = new MovieDtoMapper();
@@ -51,71 +57,24 @@ public class MovieController {
 	@Value("${api.key}")
 	private String apiKry;
 
-//	@GetMapping(value = { "", "/", "/movie", "/movie/NowPlaying", "/user/movie" })
-//	public Movie[] getNowPlaying() {
-//		// Integrating API ->
-//		// https://api.themoviedb.org/3/movie/now_playing?api_key=<<api_key>>
-//		// API Description -> https://developers.themoviedb.org/3/movies/get-now-playing
-//
-//		// String result = restTemplate.getForObject(now_playing_url + apiKry,
-//		// String.class);
-//
-//		ResponseMovieContainer resp = restTemplate.getForObject(
-//				"https://api.themoviedb.org/3/movie/now_playing?api_key=" + apiKry, ResponseMovieContainer.class);
-//		return resp.getResults();
-//	}
-//
-//	@GetMapping(value = { "/movie/Popular" })
-//	public Movie[] getPopularMovies() {
-//		// Integrating API ->
-//		// https://api.themoviedb.org/3/movie/popular?api_key=<<api_key>>
-//		// API Description ->
-//		// https://developers.themoviedb.org/3/movies/get-popular-movies
-//
-//		ResponseMovieContainer resp = restTemplate.getForObject(
-//				"https://api.themoviedb.org/3/movie/popular?api_key=" + apiKry, ResponseMovieContainer.class);
-//		return resp.getResults();
-//	}
-//
-//	@GetMapping(value = { "/movie/TopRated" })
-//	public Movie[] getTopRated() {
-//		// Integrating API ->
-//		// https://api.themoviedb.org/3/movie/top_rated?api_key=<<api_key>>
-//		// API Description ->
-//		// https://developers.themoviedb.org/3/movies/get-top-rated-movies
-//
-//		ResponseMovieContainer resp = restTemplate.getForObject(
-//				"https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKry, ResponseMovieContainer.class);
-//		return resp.getResults();
-//	}
-//
-//	@GetMapping(value = { "/movie/Upcoming" })
-//	public Movie[] getUpcoming() {
-//		// Integrating API ->
-//		// https://api.themoviedb.org/3/movie/upcoming?api_key=<<api_key>>
-//		// API Description -> https://developers.themoviedb.org/3/movies/get-upcoming
-//
-//		ResponseMovieContainer resp = restTemplate.getForObject(
-//				"https://api.themoviedb.org/3/movie/upcoming?api_key=" + apiKry, ResponseMovieContainer.class);
-//		return resp.getResults();
-//	}
-//
-//	@GetMapping(value = { "/movie/{movieId}" })
-//	public Movie geMovieInfo(@PathVariable String movieId) {
-//		Movie movie = restTemplate.getForObject("https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + apiKry,
-//				Movie.class);
-//		return movie;
-//	}
+	@GetMapping(value = { "/", "/movies" })
+	public List<MovieDto> getUserRatedMovies(Principal principal) {
+		Optional<User> user = userDao.findByName(principal.getName());
+		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
 
-	/* ########################----User Related Call----######################## */
+		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 
-	/**
-	 * @param userId
-	 * @param movieName
-	 * @return List of movies searching by name
-	 */
-	@GetMapping(value = { "/user/{userId}/movie/{movieName}" })
-	public List<MovieDto> getMovieSearch(@PathVariable Integer userId, @PathVariable String movieName) {
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserId(user.get().getId());
+
+		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
+		return movieDtos;
+	}
+
+	@GetMapping(value = { "/movie/{movieName}" })
+	public List<MovieDto> getMovieSearch(Principal principal, @PathVariable String movieName) {
+		Optional<User> user = userDao.findByName(principal.getName());
+		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
+
 		List<MovieDto> moviesDtos = new ArrayList<MovieDto>();
 		ResponseMovieContainer resp = restTemplate.getForObject(
 				"https://api.themoviedb.org/3/search/movie?api_key=" + apiKry + "&query=" + movieName,
@@ -123,7 +82,8 @@ public class MovieController {
 		if (resp.getResults().length != 0) {
 			moviesDtos = Arrays.asList(resp.getResults());
 			moviesDtos.forEach(movieDto -> {
-				UserMovieRatings userMovieRating = userMovieRatingsDao.findByUserIdAndMovieId(userId, movieDto.getId());
+				UserMovieRatings userMovieRating = userMovieRatingsDao.findByUserIdAndMovieId(user.get().getId(),
+						movieDto.getId());
 				if (Objects.nonNull(userMovieRating)) {
 					movieDto.setMyRating(userMovieRating.getRating());
 				}
@@ -134,15 +94,13 @@ public class MovieController {
 		return moviesDtos;
 	}
 
-	/**
-	 * @param userId
-	 * @param movieId
-	 * @param myRating
-	 * @return 10 Recently rated movies list Rated by given user
-	 */
-	@PostMapping(value = { "/user/{userId}/movie" })
-	public List<MovieDto> saveUserRatedMovies(@PathVariable Integer userId, @RequestParam Integer movieId,
+	@PostMapping(value = { "/movie" })
+	public List<MovieDto> saveUserRatedMovies(Principal principal, @RequestParam Integer movieId,
 			@RequestParam Double myRating) {
+		Optional<User> user = userDao.findByName(principal.getName());
+		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
+		Integer userId = user.get().getId();
+		
 		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 		if (Objects.nonNull(movieId) && Objects.nonNull(myRating)) {
 			Optional<Movie> movie = movieDao.findById(movieId);
@@ -177,45 +135,31 @@ public class MovieController {
 		return movieDtos;
 	}
 
-	/**
-	 * @param userId
-	 * @return Movies list Rated by given user
-	 */
-	@GetMapping(value = { "/user/{userId}/movies" })
-	public List<MovieDto> getUserRatedMovies(@PathVariable Integer userId) {
+	
+	@GetMapping(value = { "/movies/TopRated" })
+	public List<MovieDto> getUserTopTenRatedMovies(Principal principal) {
+		Optional<User> user = userDao.findByName(principal.getName());
+		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
+		
 		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 
-		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserId(userId);
+		Pageable pageable = PageRequest.of(0, 10);
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByRatingDesc(user.get().getId(), pageable);
 
 		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
 		return movieDtos;
 	}
 
-	/**
-	 * @param userId
-	 * @return Top 10 Rated movies list Rated by given user
-	 */
-	@GetMapping(value = { "/user/{userId}/movies/TopRated" })
-	public List<MovieDto> getUserTopRatedMovies(@PathVariable Integer userId) {
+	@GetMapping(value = { "/movies/RecentRated" })
+	public List<MovieDto> getUserTenRecentlyRatedMovies(Principal principal) {
+		Optional<User> user = userDao.findByName(principal.getName());
+		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
+		
 		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 
 		Pageable pageable = PageRequest.of(0, 10);
-		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByRatingDesc(userId, pageable);
-
-		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
-		return movieDtos;
-	}
-
-	/**
-	 * @param userId
-	 * @return 10 Recently rated movies list Rated by given user
-	 */
-	@GetMapping(value = { "/user/{userId}/movies/RecentRated" })
-	public List<MovieDto> getUserRecentlyRatedMovies(@PathVariable Integer userId) {
-		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
-
-		Pageable pageable = PageRequest.of(0, 10);
-		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByTimestampDesc(userId, pageable);
+		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByTimestampDesc(user.get().getId(),
+				pageable);
 
 		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
 		return movieDtos;

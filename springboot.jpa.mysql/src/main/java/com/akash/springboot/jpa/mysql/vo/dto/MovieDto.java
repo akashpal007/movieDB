@@ -1,4 +1,4 @@
-package com.akash.springboot.jpa.mysql.entity;
+package com.akash.springboot.jpa.mysql.vo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

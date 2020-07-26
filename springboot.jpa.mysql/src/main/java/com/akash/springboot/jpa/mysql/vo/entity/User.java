@@ -1,4 +1,4 @@
-package com.akash.springboot.jpa.mysql.entity;
+package com.akash.springboot.jpa.mysql.vo.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

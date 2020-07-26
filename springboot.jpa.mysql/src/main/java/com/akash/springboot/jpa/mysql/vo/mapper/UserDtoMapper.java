@@ -1,10 +1,10 @@
-package com.akash.springboot.jpa.mysql.entity.mapper;
+package com.akash.springboot.jpa.mysql.vo.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.akash.springboot.jpa.mysql.entity.User;
-import com.akash.springboot.jpa.mysql.entity.UserDto;
+import com.akash.springboot.jpa.mysql.vo.dto.UserDto;
+import com.akash.springboot.jpa.mysql.vo.entity.User;
 
 public class UserDtoMapper {
 

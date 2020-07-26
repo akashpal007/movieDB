@@ -2,7 +2,7 @@ package com.akash.springboot.jpa.mysql.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.akash.springboot.jpa.mysql.entity.Movie;
+import com.akash.springboot.jpa.mysql.vo.entity.Movie;
 
 public interface MovieDao extends JpaRepository<Movie, Integer> {
 

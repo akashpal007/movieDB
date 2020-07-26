@@ -1,12 +1,12 @@
-package com.akash.springboot.jpa.mysql.entity.mapper;
+package com.akash.springboot.jpa.mysql.vo.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.akash.springboot.jpa.mysql.entity.MovieDto;
-import com.akash.springboot.jpa.mysql.entity.Movie;
-import com.akash.springboot.jpa.mysql.entity.UserMovieRatings;
+import com.akash.springboot.jpa.mysql.vo.dto.MovieDto;
+import com.akash.springboot.jpa.mysql.vo.entity.Movie;
+import com.akash.springboot.jpa.mysql.vo.entity.UserMovieRatings;
 
 public class MovieDtoMapper {
 	public MovieDto geDtoFromMovie(Movie movie) {

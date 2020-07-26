@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.akash.springboot.jpa.mysql.dao.UserDao;
-import com.akash.springboot.jpa.mysql.entity.User;
+import com.akash.springboot.jpa.mysql.vo.entity.User;
 
 /**
  * @author Akash

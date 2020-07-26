@@ -1,4 +1,6 @@
-package com.akash.springboot.jpa.mysql.entity;
+package com.akash.springboot.jpa.mysql.vo.entity;
+
+import com.akash.springboot.jpa.mysql.vo.dto.MovieDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
