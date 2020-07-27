@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.akash.springboot.jpa.mysql.dao.MovieDao;
 import com.akash.springboot.jpa.mysql.dao.UserDao;
@@ -70,7 +72,7 @@ public class MovieController {
 		return movieDtos;
 	}
 
-	@GetMapping(value = { "/movie/{movieName}" })
+	@GetMapping(value = { "/movies/{movieName}" })
 	public List<MovieDto> getMovieSearch(Principal principal, @PathVariable String movieName) {
 		Optional<User> user = userDao.findByName(principal.getName());
 		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
@@ -94,14 +96,13 @@ public class MovieController {
 		return moviesDtos;
 	}
 
-	@PostMapping(value = { "/movie" })
+	@PostMapping(value = { "/movies" })
 	public List<MovieDto> saveUserRatedMovies(Principal principal, @RequestParam Integer movieId,
 			@RequestParam Double myRating) {
 		Optional<User> user = userDao.findByName(principal.getName());
 		user.orElseThrow(() -> new UsernameNotFoundException("User Not Found - Name -" + principal.getName()));
 		Integer userId = user.get().getId();
 		
-		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 		if (Objects.nonNull(movieId) && Objects.nonNull(myRating)) {
 			Optional<Movie> movie = movieDao.findById(movieId);
 			if (movie.isPresent()) {
@@ -126,6 +127,7 @@ public class MovieController {
 			throw new RuntimeException("Movie_Id or My_Rating not found");
 		}
 
+		List<MovieDto> movieDtos = new ArrayList<MovieDto>();
 		Pageable pageable = PageRequest.of(0, 10);
 		List<UserMovieRatings> userMovieRatings = userMovieRatingsDao.findByUserIdOrderByTimestampDesc(userId,
 				pageable);
@@ -133,6 +135,8 @@ public class MovieController {
 		movieDtos = movieDtoMapper.getMovieDtoListFromUserMovieRatingList(userMovieRatings);
 
 		return movieDtos;
+//		ModelAndView modelAndView = new ModelAndView("/movies/RecentRated");
+//		return modelAndView;
 	}
 
 	
